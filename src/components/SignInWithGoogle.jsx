@@ -18,6 +18,7 @@ function SignInWithGoogle() {
           photo: user.photoURL,
         });
       }
+      window.location.href = '/profile'
     } catch (error) {
       console.log(error.message);
     }
