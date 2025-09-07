@@ -9,9 +9,9 @@ function Profile() {
   const fetchUserData = async () => {
     auth.onAuthStateChanged(async (user) => {
       if (user) {
-        const docSnap = getDoc(doc(db, "Users", user.uid));
-        if ((await docSnap).exists()) {
-          setUserDetails((await docSnap).data());
+        const docSnap = await getDoc(doc(db, "Users", user.uid));
+        if (docSnap.exists()) {
+          setUserDetails(docSnap.data());
         }
       } else {
         toast.error(error.message, {
@@ -31,7 +31,7 @@ function Profile() {
       <div>
         <p>{userDetails.email}</p>
         <p>{userDetails.name}</p>
-        <p>{userDetails.photo}</p>
+        <img src={userDetails.photo}/>
       </div>
     </>
   );

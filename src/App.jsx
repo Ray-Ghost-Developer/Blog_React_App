@@ -6,8 +6,33 @@ import Login from "./components/Login";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import Profile from "./components/Profile";
+import { Provider, useDispatch } from "react-redux";
+import { auth } from "./config/firebase";
+import { useEffect } from "react";
+import store from "./store/store";
+import { login, logout } from "./store/authSlice";
 
 export default function App() {
+  const [loading, setLoading] = React.useState(true);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    auth.onAuthStateChanged(async (userDetails) => {
+      if (userDetails) {
+        dispatch(login({ 
+          uid: userDetails.uid,
+          email: userDetails.email,
+          name: userDetails.displayName,
+          photo: userDetails.photoURL
+         }));
+      } else {
+        dispatch(logout());
+      }
+
+      setLoading(false);
+    });
+  }, [dispatch]);
+
   const router = createBrowserRouter([
     {
       path: "/",
@@ -20,13 +45,13 @@ export default function App() {
     {
       path: "/profile",
       element: <Profile />,
-    }
+    },
   ]);
 
-  return (
+  return !loading ? (
     <>
-      <ToastContainer />
-      {/* <Editor
+        <ToastContainer />
+        {/* <Editor
       apiKey='zzzmfv2iwdajtn2b0n0z79a4s214fimoi5oj77tsvfpr1dh5'
       init={{
         plugins: [
@@ -49,9 +74,9 @@ export default function App() {
       initialValue=""
     /> */}
 
-      {/* <Register/> */}
-      {/* <Login/> */}
-      <RouterProvider router={router} />
+        {/* <Register/> */}
+        {/* <Login/> */}
+        <RouterProvider router={router} />
     </>
-  );
+  ) : null
 }
