@@ -1,54 +1,69 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { auth } from "../config/firebase";
 import { toast } from "react-toastify";
 import { Link } from "react-router";
-import { UserIcon, EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/solid";
+import {
+  UserIcon,
+  EnvelopeIcon,
+  LockClosedIcon,
+} from "@heroicons/react/24/solid";
 import { setDoc, doc } from "firebase/firestore";
 import { db } from "../config/firebase";
+import SignInWithGoogle from "./SignInWithGoogle";
 
 function Register() {
-  const [fname, setFname] = useState('');
-  const [lname, setLname] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [fname, setFname] = useState("");
+  const [lname, setLname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const onHandleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
       const user = res.user;
-      console.log(user);
-      if(user){
-        await setDoc(doc(db, "Users", user.uid),{
+      if (user) {
+        await setDoc(doc(db, "Users", user.uid), {
           email: user.email,
-          fname: fname,
-          lname: lname,
-        })
+          name: fname + " " + lname,
+          photo: "",
+        });
       }
-      toast.success("User created successfully!", { position: "top-center" });
-      setFname(''); setLname(''); setEmail(''); setPassword('');
-      window.location.href = '/'
+      toast.success("User SuccessFully Registered!", {
+        position: "top-center",
+      });
+      setFname("");
+      setLname("");
+      setEmail("");
+      setPassword("");
+      window.location.href = "/";
     } catch (error) {
-      toast.error(error.message, { position: "bottom-center" });
+      toast.error(error.message, {
+        position: "bottom-center",
+      });
     }
   };
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+      className="min-h-screen w-full flex items-center justify-end bg-cover bg-center bg-no-repeat px-4"
       style={{
-        backgroundImage: "url('/images/bg-login.jpg')"
+        backgroundImage: "url('/images/bg-login.jpg')",
       }}
     >
       <form
         onSubmit={onHandleSubmit}
-        className="bg-white/20 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md space-y-4 relative translate-x-95"
+        className="bg-white/20 backdrop-blur-md p-6 sm:p-8 rounded-2xl shadow-2xl w-11/12 sm:w-full max-w-md space-y-4 -translate-x-40"
       >
-        <h2 className="text-3xl font-bold text-white text-center mb-4">Sign Up</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
+          Sign Up
+        </h2>
 
         <div>
-          <label className="block text-white font-medium mb-1">First Name</label>
+          <label className="block text-white font-medium mb-1">
+            First Name
+          </label>
           <div className="flex items-center bg-white/30 rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-blue-500 transition">
             <UserIcon className="h-5 w-5 text-white mr-2" />
             <input
@@ -116,8 +131,20 @@ function Register() {
 
         <p className="text-center text-white/80 mt-2">
           Already have an account?{" "}
-          <Link to="/" className="text-blue-200 hover:underline font-medium">Log In</Link>
+          <Link to="/" className="text-blue-200 hover:underline font-medium">
+            Log In
+          </Link>
         </p>
+
+        <div className="flex items-center my-4">
+          <hr className="flex-grow border-t border-white/40" />
+          <span className="mx-3 text-white/70 font-medium text-sm">
+            Or Continue With
+          </span>
+          <hr className="flex-grow border-t border-white/40" />
+        </div>
+
+        <SignInWithGoogle />
       </form>
     </div>
   );

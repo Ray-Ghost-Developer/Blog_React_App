@@ -1,22 +1,27 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
-import React, { useState } from "react";
+import { useState } from "react";
 import { auth } from "../config/firebase";
 import { toast } from "react-toastify";
 import { Link } from "react-router";
-import { EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/solid";
+import {
+  UserIcon,
+  LockClosedIcon,
+  EnvelopeIcon,
+} from "@heroicons/react/24/solid";
+import SignInWithGoogle from "./SignInWithGoogle";
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const onHandleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await signInWithEmailAndPassword(auth, email, password);
-      const user = res.user;
-      console.log(user);
-      toast.success("Welcome!", { position: "top-center" });
-      window.location.href = '/profile'
+      await signInWithEmailAndPassword(auth, email, password);
+      toast.success("Login Successful!", { position: "top-center" });
+      setEmail("");
+      setPassword("");
+      window.location.href = "/";
     } catch (error) {
       toast.error(error.message, { position: "bottom-center" });
     }
@@ -24,16 +29,16 @@ function Login() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
-      style={{
-        backgroundImage: "url('/images/bg-login.jpg')"
-      }}
+      className="min-h-screen w-full flex items-center justify-end bg-cover bg-center bg-no-repeat px-4"
+      style={{ backgroundImage: "url('/images/bg-login.jpg')" }}
     >
       <form
         onSubmit={onHandleSubmit}
-        className="bg-white/20 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-full max-w-md space-y-4 relative translate-x-95"
+        className="bg-white/20 backdrop-blur-md p-6 sm:p-8 rounded-2xl shadow-2xl w-11/12 sm:w-full max-w-md space-y-4 transform -translate-x-40"
       >
-        <h2 className="text-3xl font-bold text-white text-center mb-4">Log In</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-4">
+          Log In
+        </h2>
 
         <div>
           <label className="block text-white font-medium mb-1">Email</label>
@@ -42,7 +47,7 @@ function Login() {
             <input
               type="email"
               value={email}
-              placeholder="Enter email"
+              placeholder="Enter your email"
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full bg-transparent text-white outline-none placeholder-white"
@@ -57,7 +62,7 @@ function Login() {
             <input
               type="password"
               value={password}
-              placeholder="Enter password"
+              placeholder="Enter your password"
               onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full bg-transparent text-white outline-none placeholder-white"
@@ -73,9 +78,23 @@ function Login() {
         </button>
 
         <p className="text-center text-white/80 mt-2">
-          New User?{" "}
-          <Link to='/Register' className="text-blue-200 hover:underline font-medium">Register Here</Link>
+          Don't have an account?{" "}
+          <Link
+            to="/register"
+            className="text-blue-200 hover:underline font-medium"
+          >
+            Sign Up
+          </Link>
         </p>
+        <div className="flex items-center my-4">
+          <hr className="flex-grow border-t border-white/40" />
+          <span className="mx-3 text-white/70 font-medium text-sm">
+            Or Continue With
+          </span>
+          <hr className="flex-grow border-t border-white/40" />
+        </div>
+
+        <SignInWithGoogle />
       </form>
     </div>
   );
